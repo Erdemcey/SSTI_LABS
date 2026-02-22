@@ -1,0 +1,31 @@
+Lab: Server-side template injection using documentation
+url: https://portswigger.net/web-security/server-side-template-injection/exploiting/lab-server-side-template-injection-using-documentation
+
+Amaç:
+
+morale.txt klasörünü silmek.
+
+
+
+Analiz:
+
+    -- Siteye yönetici olarak girdik ve metinleri düzenlediğimiz description alanına erişimimiz var.
+    -- Tornado veya ERB işe yaramadı bizde ${7*7} denedik ve 49 değerini yakaladık 
+    -- Foobar aradık ve bi error mesajı aldık . burdan FreeMarker kullanıldığını öğrendik
+
+Saldırı planlaması:
+    -- Bizi işleim sisteminde kod yürütecek bir payload geliştirmek gerekiyor.
+    -- Nihai payload: <#assign ex="freemarker.template.utility.Execute"?new()> ${ex("ls")}
+
+    Payload nasıl oluştu:
+
+     -->  ?new() builtfonksiyonu FreeMakerda  parametre olarak verilen bir sınıftan üretmeye yarar
+     -->  freemarker.template.utility.Execute sınıfı ise işletim sisteminde komut yürütmeyi sağlayan bir sınıftır
+     
+     --> Bu bilgileri topladıktan sonra bu sınıftan üreterek bir değişkene atadık daha sonra bu değişkene komutları verdik
+     pwd komutu ile bulunduğumuz dizini ls ile morale.txt yi bulduk ve silmek için rm klasör yolu/isim.txt verdik
+
+
+Sonuç:
+
+Morale.txt silindi.Lab tamamlandı.
