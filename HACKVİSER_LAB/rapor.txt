@@ -1,0 +1,17 @@
+Lab : Twig - SSTI
+Amaç: SSTI zafiyetli bir search motorundan password anlamak
+
+
+Analiz:
+    -- sitede twig zafiyeti olduğunu ve searc kısmında olduğu zaten biliniyor bize sadece doğru payloadı oluşturmak kaldı
+    -- PHP tabanlı olduğundan system() fonksiyonuna veri göndererek içeride gezinebiliriz
+    -- Map ile kaçışlarımı veriyi system fonksiyonuna göndereceğiz
+    -- Join ile sonucu basacağız.
+
+
+Nihai Payload:
+    -- {{ ['ls'] | map('system') | join }}
+
+Sonuç : 
+    -- payload ile dosya gezintisine çıkarak config.php bulduk ve cat ile okuduk şifre yakalanmış oldu.
+     
