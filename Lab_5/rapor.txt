@@ -1,0 +1,18 @@
+Lab: Server-side template injection with information disclosure via user-supplied objects
+
+url: https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Server%20Side%20Template%20Injection/Python.md#django---basic-injection
+
+
+Amaç: secret key yakalamak.
+
+
+Analiz:
+
+    -- Bir error mesajı yakaladık {{7*7}} komutu sayesinde .
+    -- Django şablonu kullanılmış. 
+    -- https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Server%20Side%20Template%20Injection/Python.md#django---basic-injection hesabından gerekli payloadları öprenebilirsiniz
+    bu noktada settibgs.secretkey komutuyla aradığımıza erişebildik.
+
+Sonuç:
+
+ Lab tamamlandı.
